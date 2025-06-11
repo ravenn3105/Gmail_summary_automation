@@ -1,0 +1,136 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "filters": {
+          "sender": "placementoffice@vitbhopal.ac.in"
+        }
+      },
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "eff66196-9903-4149-ab99-b0001fc0847c",
+      "name": "Gmail Trigger",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "4Cze9rHTs7HL7LQX",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=read through the email and summarize and extract important date, time and task to do from the body. make it short and concise. \n\nsnippet:  {{ $('Gmail Trigger').item.json.snippet }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        300,
+        0
+      ],
+      "id": "4dc70c35-cc61-45e3-a6d5-e242e6e8ea32",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        300,
+        180
+      ],
+      "id": "3b7501f9-bf9c-491a-b659-e9545ed12bf8",
+      "name": "OpenRouter Chat Model1",
+      "credentials": {
+        "openRouterApi": {
+          "id": "Xapg3o1Ij05uyXN7",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "webhook",
+        "content": "={{ $json.output }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.discord",
+      "typeVersion": 2,
+      "position": [
+        760,
+        0
+      ],
+      "id": "43018d18-db86-4eef-a3bd-e052be5898aa",
+      "name": "Discord",
+      "webhookId": "fb62feec-4867-4584-bda4-e5ddb66fbccd",
+      "credentials": {
+        "discordWebhookApi": {
+          "id": "KOCFUplB0Ur7sraR",
+          "name": "Discord Webhook account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Gmail Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Discord",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "c8cb48f6-c1ed-4367-8891-3f62ce3953af",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "c9134e725d6a22ca01c657b6e20edb34137a2cc90bd60b9da0da94346f3e1f23"
+  },
+  "id": "QFOboPEu26T7u5XD",
+  "tags": []
+}
